@@ -1,0 +1,2 @@
+# To add this file as a trusted file (wsl only)
+git config --global --add safe.directory /home/leo/OpenFOAM/leo-8/github
