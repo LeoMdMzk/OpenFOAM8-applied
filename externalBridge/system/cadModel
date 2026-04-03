@@ -1,0 +1,5 @@
+modelName	"baseModel.stl";
+featuresName	"baseModel.eMesh";
+bridgeChord     30; //chord of the width, length perpendicular to projectedArea
+projectedArea 	 9.4; // Area of the bridge projected in the direction of the velocity
+rotationCenter     (15 0.5 4.67);

@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |
+| \\      /  F ield         | mapFieldsDict for mapping U, k, omega, p
+|  \\    /   O peration     |
+|   \\  /    A nd           | Target case: this case
+|    \\/     M anipulation  | Source case: previous simulation
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      mapFieldsDict;
+}
+
+// For consistent meshes you actually do not *need* mapFieldsDict,
+// but it is harmless to keep this minimal file.
+// For inconsistent meshes, patchMap / cuttingPatches control
+// how boundary data is mapped. :contentReference[oaicite:1]{index=1}
+
+// use it with
+// mapFields ../base-5ms-laminar -sourceTime latestTime
+
+fields
+(
+    U
+    p
+    k
+    omega
+);
+
+patchMap
+(
+);
+
+cuttingPatches
+(
+);
+
+// ************************************************************************* //

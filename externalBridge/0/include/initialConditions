@@ -1,0 +1,21 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  8
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+
+flowVelocity         5;
+pressure             0;
+
+// Boundary conditions for k and omega calculated following these guidelines
+// https://www.cfd-online.com/Wiki/Turbulence_free-stream_boundary_conditions
+
+turbulentKE          0.844; // TKE = 3/2 * (UI)^2, I = 0.15 (15%)
+turbulentOmega         1.9; // omega = sqrt(k)/l, l:turbulent length scale = 0.05*H = 0.05*9.4 = 0.47
+
+//turbulentKE          0.24; from motorbike tutorial
+//turbulentOmega       1.78; from motorbike tutorial
+
+// ************************************************************************* //

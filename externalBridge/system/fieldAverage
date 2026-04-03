@@ -1,0 +1,20 @@
+fieldAverage
+{
+    type            fieldAverage;
+    functionObjectLibs ("libfieldFunctionObjects.so");
+    enabled         true;
+    timeStart       10;        // after transient
+    resetOnRestart  false;
+    writeControl        outputTime; //adjustableRunTime;  // or "runTime" if you prefer
+    //writeInterval       outputTime;          // every 2 seconds
+
+    fields
+    (
+        U
+        {
+            mean        on;
+            prime2Mean  on;
+            base        time;
+        }
+    );
+}

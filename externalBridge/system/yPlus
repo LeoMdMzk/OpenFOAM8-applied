@@ -1,0 +1,11 @@
+    yPlus
+    {
+        type        yPlus;
+        libs        ("libfieldFunctionObjects.so");
+        enabled     true;
+
+        writeControl    writeTime;      // or timeStep, etc.
+        //writeInterval   1;
+
+        patches     (bridge);       // <-- your bridge wall patch name
+    }

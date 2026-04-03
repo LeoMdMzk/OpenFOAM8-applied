@@ -1,0 +1,55 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  8
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+
+forces
+{
+	#include        "../0/include/initialConditions"
+	#include        "cadModel"
+	type 		forces ;
+	libs 		("libforces.so");
+	patches 	(bridge); // Enter the patch name of your bridge deck
+	rho 		rhoInf ;
+	rhoInf 		1.23; 	// fluid density
+	CofR 		$rotationCenter; 	// Origin for moment calculations
+	writeControl 	timeStep ;
+	timeInterval    2;
+	//writeInterval 2; // Output data every <ndt > time steps
+}
+
+forceCoeffs
+{
+    #include        "../0/include/initialConditions"
+    #include        "cadModel"
+    type            forceCoeffs;
+    libs            ("libforces.so");
+    writeControl    timeStep;
+    timeInterval    2;
+    log             yes;
+
+    patches         (bridge);
+    rho             rhoInf;      // Indicates incompressible
+    rhoInf          1.23;        // Redundant for incompressible
+    liftDir         (0 0 1);
+    dragDir         (1 0 0);
+    CofR            $rotationCenter;  // Axle midpoint on ground
+    pitchAxis       (0 1 0);
+    magUInf         $flowVelocity;
+    lRef            $bridgeChord;        // see cadModel -> Bridge width approx 30 m
+    Aref            $projectedArea;        // see cadModel -> Bridge face area ~ height * span
+    /*
+    binData
+    {
+        nBin        20;          // output data into 20 bins
+        direction   (1 0 0);     // bin direction
+        cumulative  yes;
+    }
+    */
+}
+
+
+// ************************************************************************* //
