@@ -1,0 +1,3 @@
+This project is build in OpenFOAM 8 from https://openfoam.org/
+The problem is to solve the external flow over a bridge, focusing on estimating the drag and lift forces over the bridge.
+The solution uses a 2D approach, with the KOmegaSST turbulence model
