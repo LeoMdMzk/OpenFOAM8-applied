@@ -1,0 +1,49 @@
+refValue        uniform (0 0 0);
+refGradient     uniform (0 0 0);
+valueFraction    uniform 0.9;
+
+name            outletProfileMixed;
+
+code
+#{
+    const fvPatch& p = this->patch();
+    const vectorField& Cf = p.Cf();
+
+    vectorField& refVal = this->refValue();
+    scalarField& valFrac = this->valueFraction();
+    vectorField& refGrad = this->refGrad();
+
+    scalar t = this->db().time().value();
+    scalar vf = 0.3+0.6*(t/12.0);
+    if (vf < 0.3) vf = 0.3;
+    if (vf > 0.9) vf = 0.9;
+
+    const scalar h = 4.5;
+    const scalar Umean = 5.5;
+    const scalar zBed = 9.90;
+    const scalar hinter = 0.5;
+
+    forAll(Cf, faceI)
+    {
+        const scalar z = Cf[faceI].z();
+
+        if (z <= zBed + h - hinter)
+        {
+            refVal[faceI] = vector(Umean, 0, 0);
+            valFrac[faceI] = vf;
+        }
+        else if (z <= zBed + h + hinter)
+        {
+	   scalar hFrac = (z - zBed - h + hinter) / (2*hinter);
+            refVal[faceI] = vector(Umean*hFrac, 0, 0);
+            valFrac[faceI] = vf*hFrac;
+        }
+        else
+        {
+            refVal[faceI] = vector(0, 0, 0);
+            valFrac[faceI] = 0.0;
+        }
+
+        refGrad[faceI] = Zero;
+    }
+#};

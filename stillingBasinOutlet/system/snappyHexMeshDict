@@ -1,0 +1,312 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  8
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Which of the steps to run
+castellatedMesh true;
+snap            true;
+addLayers       true;
+
+geometry
+{
+    concrete
+    {
+        type triSurfaceMesh;
+        file "stillingBasin_main.obj";
+    }
+    baffle
+    {
+        type triSurfaceMesh;
+        file "stillingBasin_baffle.obj";
+    }
+    bed
+    {
+        type triSurfaceMesh;
+        file "stillingBasin_end.obj";
+    }
+
+    refinementBox1
+    {
+        type searchableBox;
+        min (40 0 0);
+        max (100 1 20);
+    }
+
+    /*refineCyl
+    {
+        type searchableCylinder;
+        point1 (-4 0 6);
+        point2 (-4 1 6);
+        radius 11;
+    }*/
+};
+
+castellatedMeshControls
+{
+    // Refinement parameters
+
+    // If local number of cells is >= maxLocalCells on any processor
+    // switches from from refinement followed by balancing
+    maxLocalCells 100000;
+    maxGlobalCells 2000000;
+    minRefinementCells 10;
+    maxLoadUnbalance 0.10;
+    nCellsBetweenLevels 3;
+
+    // Explicit feature edge refinement
+    // Specifies a level for any cell intersected by its edges.
+    // This is a featureEdgeMesh, read from constant/triSurface for now.
+    features
+    (
+        {
+            file "stillingBasin.eMesh";
+            level 2;
+        }
+    );
+
+    // Surface based refinement
+    // angle > resolveFeatureAngle get refined up to the maximum level.
+
+    refinementSurfaces
+    {
+        concrete
+        {
+            level (1 2);
+            patchInfo
+            {
+                type wall;
+                inGroups (wall);
+            }
+        }
+        baffle
+        {
+            level (1 2);
+            patchInfo
+            {
+                type wall;
+                inGroups (wall);
+            }
+        }
+        bed
+        {
+            level (1 2);
+            patchInfo
+            {
+                type wall;
+                inGroups (wall);
+            }
+        }
+    }
+
+    // Resolve sharp angles
+    resolveFeatureAngle 30;
+
+    refinementRegions
+    {
+    	concrete
+         {
+            mode distance;
+            levels
+            (
+		(0.8 2)   // within 0.45 m of the surface -> level 2
+            	(2.5 1)   // within 2.5 m of the surface -> level 2
+            );
+    	}
+    	baffle
+         {
+            mode distance;
+            levels
+            (
+		(1 2)   // within 0.45 m of the surface -> level 2
+            	(3.5 1)   // within 2 m of the surface -> level 2
+            );
+    	}
+    	bed
+         {
+            mode distance;
+            levels
+            (
+		//(0.45 2)   // within 0.45 m of the surface -> level 2
+            	(2 1)   // within 2 m of the surface -> level 2
+            );
+    	}
+        refinementBox1
+        {
+            mode inside;
+            levels ((1e15 1));
+        }
+        /*refineCyl
+        {
+            mode inside;
+            levels ((1e15 1));
+        }*/
+    }
+
+
+    // Mesh selection
+    locationInMesh (70 0.5 20);
+    allowFreeStandingZoneFaces true;
+}
+
+
+
+// Settings for the snapping.
+snapControls
+{
+    //- Number of patch smoothing iterations before finding correspondence
+    //  to surface
+    nSmoothPatch 3;
+
+    //- Relative distance for points to be attracted by surface feature point
+    //  or edge. True distance is this factor times local
+    //  maximum edge length.
+    tolerance 2.0;
+
+    //- Number of mesh displacement relaxation iterations.
+    nSolveIter 30;
+
+    //- Maximum number of snapping relaxation iterations. Should stop
+    //  before upon reaching a correct mesh.
+    nRelaxIter 5;
+
+    // Feature snapping
+
+        //- Number of feature edge snapping iterations.
+        nFeatureSnapIter 10;
+
+        //- Detect (geometric only) features by sampling the surface
+        implicitFeatureSnap false;
+        explicitFeatureSnap true;
+        multiRegionFeatureSnap false;
+}
+
+
+
+// Settings for the layer addition.
+addLayersControls
+{
+    // Are the thickness parameters below relative to the undistorted
+    // size of the refined cell outside layer (true) or absolute sizes (false).
+    relativeSizes true; //true;
+
+    // Per final patch (so not geometry!) the layer information
+    layers
+    {
+        concrete
+        {
+            nSurfaceLayers 4;
+        }
+        baffle
+        {
+            nSurfaceLayers 5;
+        }
+        bed
+        {
+            nSurfaceLayers 5;
+        }
+    }
+
+    // Expansion factor for layer mesh
+    expansionRatio 1.4;
+
+    // Wanted thickness of final added cell layer. If multiple layers
+    // is the thickness of the layer furthest away from the wall.
+    // Relative to undistorted size of cell outside layer.
+    // See relativeSizes parameter.
+    finalLayerThickness 0.9; //0.6; //relativeSizes true
+
+    // Minimum thickness of cell layer. If for any reason layer
+    // cannot be above minThickness do not add layer.
+    // Relative to undistorted size of cell outside layer.
+    minThickness 0.02; //0.15; //relativeSizes true
+
+    // If points get not extruded do nGrow layers of connected faces that are
+    // also not grown. This helps convergence of the layer addition process
+    // close to features.
+    // Note: changed(corrected) w.r.t 17x! (didn't do anything in 17x)
+    nGrow 1;
+
+    // Advanced settings
+
+    // When not to extrude surface. 0 is flat surface, 90 is when two faces
+    // are perpendicular
+    featureAngle 60;
+
+    // At non-patched sides allow mesh to slip if extrusion direction makes
+    // angle larger than slipFeatureAngle.
+    slipFeatureAngle 30;
+
+    // Maximum number of snapping relaxation iterations. Should stop
+    // before upon reaching a correct mesh.
+    nRelaxIter 3;
+
+    // Number of smoothing iterations of surface normals
+    nSmoothSurfaceNormals 1;
+
+    // Number of smoothing iterations of interior mesh movement direction
+    nSmoothNormals 3;
+
+    // Smooth layer thickness over surface patches
+    nSmoothThickness 10;
+
+    // Stop layer growth on highly warped cells
+    maxFaceThicknessRatio 0.5;
+
+    // Reduce layer growth where ratio thickness to medial
+    // distance is large
+    maxThicknessToMedialRatio 0.3;
+
+    // Angle used to pick up medial axis points
+    // Note: changed(corrected) w.r.t 17x! 90 degrees corresponds to 130 in 17x.
+    minMedianAxisAngle 90;
+
+
+    // Create buffer region for new layer terminations
+    nBufferCellsNoExtrude 0;
+
+
+    // Overall max number of layer addition iterations. The mesher will exit
+    // if it reaches this number of iterations; possibly with an illegal
+    // mesh.
+    nLayerIter 50;
+}
+
+
+
+// Generic mesh quality settings. At any undoable phase these determine
+// where to undo.
+meshQualityControls
+{
+    #include "meshQualityDict"
+}
+
+
+// Advanced
+
+// Write flags
+writeFlags
+(
+    scalarLevels
+    layerSets
+    layerFields     // write volScalarField for layer coverage
+);
+
+
+// Merge tolerance. Is fraction of overall bounding box of initial mesh.
+// Note: the write tolerance needs to be higher than this.
+mergeTolerance 1e-6;
+
+
+// ************************************************************************* //

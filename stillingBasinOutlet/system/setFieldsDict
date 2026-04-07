@@ -1,0 +1,72 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  8
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      setFieldsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+defaultFieldValues
+(
+    volScalarFieldValue alpha.water 0
+);
+
+regions
+(
+    rotatedBoxToCell
+    {
+    	origin  (10 0 30);     // one corner of the water region
+
+    	i       (15 0 -0.7);     // main direction of the slope
+    	j       (0 1 0);      // width direction (your 2D thickness)
+    	k       (0 0 2.7);     // vertical thickness above the sloping bottom
+
+    	fieldValues
+    	(
+        		volScalarFieldValue alpha.water 1
+    	);
+    }
+
+    boxToCell
+    {
+        	box (25 0 0) (100 1 14);
+        	fieldValues
+        	(
+            volScalarFieldValue alpha.water 1
+        	);
+     }
+
+    rotatedBoxToCell
+    {
+    	origin  (36 0 24.2);     // one corner of the water region
+
+    	i       (15 0 -15);     // main direction of the slope
+    	j       (0 1 0);      // width direction (your 2D thickness)
+    	k       (1.5 0 2);     // vertical thickness above the sloping bottom
+
+    	fieldValues
+    	(
+        		volScalarFieldValue alpha.water 1
+    	);
+    }
+    cylinderToCell
+    {
+        p1 (23.3 0 11.6);
+        p2 (23.3 1 11.6);
+        radius 20.4;
+        fieldValues
+        (
+            volScalarFieldValue alpha.water 1
+        );
+    }
+);
+
+// ************************************************************************* //

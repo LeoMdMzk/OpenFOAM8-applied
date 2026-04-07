@@ -1,0 +1,32 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  8
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      extrudeMeshDict;
+}
+/*********** system/extrudeMeshDict ***********/
+
+constructFrom patch;
+
+sourceCase ".";                // or "../my3DCase"
+sourcePatches (front);          // patch from the snappy mesh you want to extrude
+exposedPatchName back;         // name for the opposite patch
+
+extrudeModel plane;//linearNormal;
+nLayers 1;                     // 1 cell in the extrusion direction = 2D case
+
+linearNormalCoeffs
+{
+    thickness 1;               // arbitrary physical thickness
+}
+
+mergeFaces false;
+flipNormals yes;
