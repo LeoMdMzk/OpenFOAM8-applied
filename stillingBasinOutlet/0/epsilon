@@ -36,7 +36,7 @@ boundaryField
         value           $internalField;
     }
 
-    "(concrete|baffle|bed)"
+    "(concrete|baffle|bed|lowerWall)"
     {
         type            epsilonWallFunction;
         value           $internalField;

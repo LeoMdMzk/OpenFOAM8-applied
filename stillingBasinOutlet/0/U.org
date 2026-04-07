@@ -38,21 +38,13 @@ boundaryField
 	type            codedMixed;
 	#include    "include/outletU"
    }
-    /*outlet
-    {
-         type            outletPhaseMeanVelocity;
-         Umean        6;
-         UnMean        6;
-         alpha           alpha.water;
-         value           uniform (6 0 0);
-    }*/
 
     /*outlet
     {
         type            zeroGradient;
     }*/
 
-    "(concrete|baffle|bed)"
+    "(concrete|baffle|bed|lowerWall)"
     {
         type            noSlip;
     }

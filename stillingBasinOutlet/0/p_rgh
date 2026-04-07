@@ -34,7 +34,7 @@ boundaryField
     	value           uniform 0;
     }
 
-    "(concrete|baffle|bed)"
+    "(concrete|baffle|bed|lowerWall)"
     {
         type            fixedFluxPressure;
     }

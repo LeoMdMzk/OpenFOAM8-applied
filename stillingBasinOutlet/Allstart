@@ -12,9 +12,6 @@ runApplication potentialFoam
 foamDictionary 0/U \
   -entry "boundaryField.inlet" \
   -set "{ type variableHeightFlowRateInletVelocity; flowRate 25; alpha alpha.water; value uniform (0 0 0); }"
-#foamDictionary 0/U \
-# -entry "boundaryField.outlet" \
-#  -set "{ type outletPhaseMeanVelocity; Umean  6; UnMean  6; alpha alpha.water; value uniform (6 0 0); }"
 foamDictionary 0/U \
   -entry "boundaryField.outlet" \
   -set "{ type codedMixed; #include \"include/outletU\"; }"
